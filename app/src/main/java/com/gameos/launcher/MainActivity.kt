@@ -208,6 +208,59 @@ class GameOverlayService : Service() {
     private var toolboxPanel: LinearLayout? = null
     private val monitorHandler = Handler(Looper.getMainLooper())
 private var monitorView: TextView? = null
+    
+private fun updateMonitor() {
+    val activityManager =
+        getSystemService(ACTIVITY_SERVICE) as ActivityManager
+
+    val memoryInfo = ActivityManager.MemoryInfo()
+    activityManager.getMemoryInfo(memoryInfo)
+
+    val totalRam = memoryInfo.totalMem / (1024 * 1024)
+    val availableRam = memoryInfo.availMem / (1024 * 1024)
+    val usedRam = totalRam - availableRam
+
+    val ramPercent = if (totalRam > 0) {
+        usedRam * 100 / totalRam
+    } else {
+        0
+    }
+
+    val batteryManager =
+        getSystemService(BATTERY_SERVICE) as BatteryManager
+
+    val battery = batteryManager.getIntProperty(
+        BatteryManager.BATTERY_PROPERTY_CAPACITY
+    )
+
+    val powerManager =
+        getSystemService(POWER_SERVICE) as PowerManager
+
+    val thermal = if (Build.VERSION.SDK_INT >= 29) {
+        when (powerManager.currentThermalStatus) {
+            PowerManager.THERMAL_STATUS_NONE -> "Normal"
+            PowerManager.THERMAL_STATUS_LIGHT -> "Light"
+            PowerManager.THERMAL_STATUS_MODERATE -> "Moderate"
+            PowerManager.THERMAL_STATUS_SEVERE -> "Severe"
+            PowerManager.THERMAL_STATUS_CRITICAL -> "Critical"
+            PowerManager.THERMAL_STATUS_EMERGENCY -> "Emergency"
+            PowerManager.THERMAL_STATUS_SHUTDOWN -> "Shutdown"
+            else -> "Unknown"
+        }
+    } else {
+        "Unavailable"
+    }
+
+    val batteryText =
+        if (battery >= 0) "$battery%" else "Unavailable"
+
+    monitorView?.text =
+        "⚡ DEVICE MONITOR\n" +
+        "RAM: $usedRam / $totalRam MB ($ramPercent% used)\n" +
+        "BATTERY: $batteryText\n" +
+        "THERMAL STATUS: $thermal"
+}
+
 
 private val monitorUpdater = object : Runnable {
     override fun run() {
