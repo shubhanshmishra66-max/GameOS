@@ -206,6 +206,18 @@ class GameOverlayService : Service() {
     private lateinit var windowManager: WindowManager
     private var floatingButton: TextView? = null
     private var toolboxPanel: LinearLayout? = null
+    private val monitorHandler = Handler(Looper.getMainLooper())
+private var monitorView: TextView? = null
+
+private val monitorUpdater = object : Runnable {
+    override fun run() {
+        updateMonitor()
+
+        if (toolboxPanel != null) {
+            monitorHandler.postDelayed(this, 3000)
+        }
+    }
+}
 
     companion object {
         private const val CHANNEL_ID = "gameos_overlay_channel"
