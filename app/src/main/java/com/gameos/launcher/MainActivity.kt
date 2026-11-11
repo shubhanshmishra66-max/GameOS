@@ -36,6 +36,10 @@ import androidx.compose.ui.unit.sp
 import android.app.Service
 import android.content.pm.ServiceInfo
 import android.os.IBinder
+import android.os.BatteryManager
+import android.os.Handler
+import android.os.Looper
+import android.os.PowerManager
 
 private val NeonPurple = ComposeColor(0xFFB45CFF)
 private val DarkBackground = ComposeColor(0xFF090611)
